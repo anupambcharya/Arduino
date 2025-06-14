@@ -1,0 +1,234 @@
+#include <SoftwareSerial.h>
+#include <SPI.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <stdlib.h>
+
+
+#define GREEN_LED 12
+#define YELLOW_LED 11
+#define RED_LED 10
+
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+//#define OLED_ADDR 0x3C // Reset pin # (or -1 if sharing Arduino reset pin)
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+const byte rxPin = 4;
+const byte txPin = 5;
+
+char c = ' ';
+char light = ' ';
+String strVoltage = "";
+
+float voltage = 0.00;
+
+// Set up a new SoftwareSerial object
+SoftwareSerial BT (rxPin, txPin);
+
+
+void setup()
+{
+  // Define pin modes for TX and RX
+    pinMode(rxPin, INPUT);
+    pinMode(txPin, OUTPUT);
+    
+    Serial.begin(9600);
+    BT.begin(38400);
+   
+
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    
+    display.clearDisplay();
+
+    display.setTextSize(1.5);
+    display.setTextColor(WHITE);
+    
+
+    //***Serial.println("Ready Setup");
+    delay(1000);                       // Last attempt, delay until
+    //BT.write("AT\r\n");                // "AT" command is sent over software
+   
+ }
+
+
+void loop()
+{
+
+/********
+  delay(500);                        // serial port. After delay,
+  display.clearDisplay();
+  
+  if (BT.available() > 0) {  
+         // do nothing other than report chars
+    c = BT.read(); 
+    //light = c;
+    //Serial.write("Reached here");
+    Serial.write(c);                 // anything is available
+    strVoltage="";
+    
+    for (int i = 1; i <= 4; i++)
+      { 
+         Serial.println("Reached while");            
+         strVoltage=strVoltage + c;
+         delay(10);
+         c = BT.read();    
+      }// end while
+
+
+   //Serial.println("Voltage = " +  strVoltage);
+   voltage = strVoltage.toFloat();
+   //Serial.println("Voltage F = " +  String(voltage));
+
+   // OLED display
+
+   display.clearDisplay();
+   display.setCursor(0,0);
+   display.println("Voltage = " + strVoltage);
+
+
+   // light
+
+   digitalWrite(GREEN_LED, LOW);
+   digitalWrite(YELLOW_LED, LOW);
+   digitalWrite(RED_LED, LOW);
+   if (voltage < 1.3)
+   {
+         digitalWrite(GREEN_LED, LOW);
+         digitalWrite(YELLOW_LED, LOW);
+         digitalWrite(RED_LED, LOW);
+
+         display.setCursor(0,15);
+         display.println("Current = 9.67");
+         display.display();
+   }
+    else
+    if(voltage > 1.3 && voltage < 2.5){
+        digitalWrite(GREEN_LED, HIGH);
+        digitalWrite(YELLOW_LED, LOW);
+        digitalWrite(RED_LED, LOW);
+
+        display.setCursor(0,15);
+         display.println("Current = 21.04");
+         display.display();
+    }
+
+    else
+    if(voltage > 2.5 && voltage < 4.0){
+        digitalWrite(GREEN_LED, LOW);
+        digitalWrite(YELLOW_LED, HIGH);
+        digitalWrite(RED_LED, LOW);
+
+        display.setCursor(0,15);
+         display.println("Current = 36.57");
+         display.display();
+
+    }
+    else
+    if(voltage > 4.0){
+        digitalWrite(GREEN_LED, LOW);
+        digitalWrite(YELLOW_LED, LOW);
+        digitalWrite(RED_LED, HIGH);
+
+        display.setCursor(0,15);
+         display.println("Current = 57.42");
+         display.display();
+
+    }
+
+
+  /**
+   if( == '0'){
+
+           Serial.println("Reached 1");
+           digitalWrite(GREEN_LED, LOW);
+           digitalWrite(YELLOW_LED, LOW);
+           digitalWrite(RED_LED, LOW);
+
+           display.clearDisplay();
+           display.setCursor(0,0);
+           display.println("Voltage = 0.94");
+            display.setCursor(0,15);
+           display.println("Current = 9.87");
+           display.display();
+      }
+    else
+    if(c == 'G'){
+          Serial.println("Reached 2");
+          digitalWrite(GREEN_LED, HIGH);
+          //delay(1000);
+          //digitalWrite(GREEN_LED, LOW);
+
+           display.clearDisplay();
+           display.setCursor(0,0);
+           display.println("Voltage = 1.57");
+           display.setCursor(0,15);
+           display.println("Current = 20.67");
+           display.display();
+         
+      }
+     else
+     if(c == 'Y'){
+          Serial.println("Reached 4");
+          digitalWrite(YELLOW_LED, HIGH);
+          //delay(1000);
+          //digitalWrite(YELLOW_LED, LOW);
+
+          display.clearDisplay();
+           display.setCursor(0,0);
+           display.println("Voltage = 3.54");
+           display.setCursor(0,15);
+           display.println("Current = 26.07");
+           display.display();
+          
+     }
+      else
+     if(c == 'R'){
+          Serial.println("Reached RED");
+          digitalWrite(RED_LED, HIGH);
+
+          display.clearDisplay();
+           display.setCursor(0,0);
+           display.println("Voltage = 4.86");
+           display.setCursor(0,15);
+           display.println("Current = 33.78");
+           display.display();
+          
+     }
+   */
+    
+     /*if (Serial.available() > 0) {   // Left over from previous code
+    
+        c = Serial.read();               // to send ASCII from PC serial monitor
+        Serial.write(c);                 // to HC-05 in case we get that far.
+        BT.write(c);                     // [Spoiler Alert] We haven't.
+      }*/
+
+      //Serial.println("Inside loop");
+  }
+
+  delay(500);
+  //Serial.println("Ready loop");
+  
+********/
+
+
+ //AT command activate
+ /****
+  if (BT.available() > 0) {  
+         // do nothing other than report chars
+    //Serial.print("Reached here BT");
+    c = BT.read();                   // from software serial port as long as
+    Serial.write(c);                 // anything is available
+  }
+  if (Serial.available() > 0) {   // Left over from previous code
+        c = Serial.read();               // to send ASCII from PC serial monitor
+    Serial.write(c);                 // to HC-05 in case we get that far.
+    BT.write(c);                     // [Spoiler Alert] We haven't.
+  }******/
+}
